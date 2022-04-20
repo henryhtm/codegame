@@ -21,7 +21,6 @@ module.exports = class HomeView extends RootView
     'change #school-level-dropdown': 'onChangeSchoolLevelDropdown'
     'click .student-btn': 'onClickStudentButton'
     'click .teacher-btn': 'onClickTeacherButton'
-    'click #learn-more-link': 'onClickLearnMoreLink'
     'click .screen-thumbnail': 'onClickScreenThumbnail'
     'click #carousel-left': 'onLeftPressed'
     'click #carousel-right': 'onRightPressed'
@@ -62,10 +61,6 @@ module.exports = class HomeView extends RootView
       storage.save('referredBySunburst', true)
       @openModalView(new CreateAccountModal({startOnPath: 'teacher'}))
     super()
-
-  onClickLearnMoreLink: ->
-    window.tracker?.trackEvent 'Homepage Click Learn More', category: 'Homepage', []
-    @scrollToLink('#classroom-in-box-container')
 
   onClickPlayButton: (e) ->
     window.tracker?.trackEvent $(e.target).data('event-action'), category: 'Homepage', []
@@ -204,7 +199,7 @@ module.exports = class HomeView extends RootView
 
   fitToPage: =>
     windowHeight = $(window).height()
-    linkBox = @$("#learn-more-link").parent()
+    linkBox = @$("#site-content-area").parent()
     linkOffset = linkBox.offset()
     adjustment = windowHeight - (linkOffset.top + linkBox.height())
     target = @$('.top-spacer').first()
