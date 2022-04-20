@@ -8,7 +8,6 @@ utils = require 'core/utils'
 storage = require 'core/storage'
 {logoutUser, me} = require('core/auth')
 CreateAccountModal = require 'views/core/CreateAccountModal/CreateAccountModal'
-application.moduleLoader.load('vendor/vimeo-player-js')
 
 #  TODO: auto margin feature paragraphs
 
@@ -18,7 +17,6 @@ module.exports = class HomeView extends RootView
   template: template
 
   events:
-    'click .open-video-btn': 'onClickOpenVideoButton'
     'click .play-btn': 'onClickPlayButton'
     'change #school-level-dropdown': 'onChangeSchoolLevelDropdown'
     'click .student-btn': 'onClickStudentButton'
@@ -65,16 +63,6 @@ module.exports = class HomeView extends RootView
       @openModalView(new CreateAccountModal({startOnPath: 'teacher'}))
     super()
 
-  onClickOpenVideoButton: (event) ->
-    unless @$('#screenshot-lightbox').data('bs.modal')?.isShown
-      event.preventDefault()
-      # Modal opening happens automatically from bootstrap
-      @$('#screenshot-carousel').carousel($(event.currentTarget).data("index"))
-    @vimeoPlayer.play()
-
-  onCloseLightbox: ->
-    @vimeoPlayer.pause()
-
   onClickLearnMoreLink: ->
     window.tracker?.trackEvent 'Homepage Click Learn More', category: 'Homepage', []
     @scrollToLink('#classroom-in-box-container')
@@ -117,24 +105,14 @@ module.exports = class HomeView extends RootView
     window.tracker?.trackEvent $(e.target).data('event-action'), category: 'Homepage', []
 
   afterRender: ->
-    application.moduleLoader.loadPromises['vendor/vimeo-player-js'].then =>
-      @vimeoPlayer = new Vimeo.Player(@$('.vimeo-player')[0])
     @onChangeSchoolLevelDropdown()
     @$('#screenshot-lightbox')
       .modal()
-      .on 'hide.bs.modal', (e)=>
-        @vimeoPlayer.pause()
-      .on 'shown.bs.modal', (e)=>
-        if @$('.video-carousel-item').hasClass('active')
-          @vimeoPlayer.play()
     @$('#screenshot-carousel')
       .carousel({
         interval: 0
         keyboard: false
       })
-      .on 'slide.bs.carousel', (e) =>
-        if not $(e.relatedTarget).hasClass('.video-carousel-item')
-          @vimeoPlayer.pause()
     $(window).on 'resize', @fitToPage
     @fitToPage()
     setTimeout(@fitToPage, 0)
