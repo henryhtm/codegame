@@ -144,7 +144,6 @@ setupExpressMiddleware = (app) ->
 
   setupProxyMiddleware app # TODO: Flatten setup into one function. This doesn't fit its function name.
 
-  app.use require('serve-favicon') path.join(__dirname, 'public', 'images', 'favicon.ico')
   app.use require('cookie-parser')()
   app.use require('body-parser').json({limit: '25mb', strict: false})
   app.use require('body-parser').urlencoded extended: true, limit: '25mb'
@@ -180,11 +179,7 @@ setupCountryRedirectMiddleware = (app, country='china', host='cn.codecombat.com'
     return req.country is country and reqHost not in hosts and reqHost.indexOf(config.unsafeContentHostname) is -1
 
   app.use (req, res, next) ->
-    if shouldRedirectToCountryServer(req) and hosts.length
-      res.writeHead 302, "Location": 'http://' + hosts[0] + req.url
-      res.end()
-    else
-      next()
+    next()
 
 setupOneSecondDelayMiddleware = (app) ->
   if(config.slow_down)
@@ -440,7 +435,7 @@ setupUserDataRoute = (app) ->
       "window.me = {"
       "\tget: function(attribute) { return window.userObject[attribute]; }"
       "};"
-      redirect or ''
+      ''
     ].join "\n"
 
 setupFallbackRouteToIndex = (app) ->
